@@ -1,4 +1,44 @@
 <resources>
     <string name="app_name">Hacker News</string>
     <string name="title_story_detail">Story Detail</string>
+    <string name="go">Go</string>
+    <string name="points">%1$s points</string>
+    <string name="error_loading_top_stories">There was an error loading the top stories. Please try again later.</string>
+
+    <plurals name="second">
+        <item quantity="zero">%d seconds ago</item>
+        <item quantity="one">1 second ago</item>
+        <item quantity="many">%d seconds ago</item>
+        <item quantity="other">%d seconds ago</item>
+    </plurals>
+
+    <plurals name="minute">
+        <item quantity="zero">%d minutes ago</item>
+        <item quantity="one">1 minute ago</item>
+        <item quantity="many">%d minutes ago</item>
+        <item quantity="other">%d minutes ago</item>
+    </plurals>
+
+    <plurals name="hour">
+        <item quantity="zero">%d hours ago</item>
+        <item quantity="one">1 hour ago</item>
+        <item quantity="many">%d hours ago</item>
+        <item quantity="other">%d hours ago</item>
+    </plurals>
+
+    <plurals name="day">
+        <item quantity="zero">%d days</item>
+        <item quantity="one">1 day</item>
+        <item quantity="many">%d days</item>
+        <item quantity="other">%d days</item>
+    </plurals>
+
+    <plurals name="week">
+        <item quantity="zero">%d weeks ago</item>
+        <item quantity="one">1 week ago</item>
+        <item quantity="many">%d weeks ago</item>
+        <item quantity="other">%d weeks ago</item>
+    </plurals>
+
+
 </resources>

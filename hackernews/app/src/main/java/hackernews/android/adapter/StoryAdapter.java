@@ -2,34 +2,37 @@ package hackernews.android.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.customtabs.CustomTabsIntent;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import hackernews.android.R;
 import hackernews.android.StoryDetailActivity;
 import hackernews.android.StoryDetailFragment;
-import hackernews.android.dummy.DummyContent;
+import hackernews.android.beans.Story;
 
 /**
  * Created by viki on 4/3/17.
  */
 
-public class StoryAdapter
-        extends RecyclerView.Adapter<StoryAdapter.ViewHolder> {
+public class StoryAdapter extends RecyclerView.Adapter<StoryAdapter.ViewHolder> {
 
-    private final List<DummyContent.Story> mValues;
+    private final List<Story> values;
     private boolean isTwoPane;
     private AppCompatActivity activity;
 
-    public StoryAdapter(List<DummyContent.Story> items, AppCompatActivity activity, boolean isTwoPane ) {
-        mValues = items;
+    public StoryAdapter(AppCompatActivity activity, boolean isTwoPane ) {
+        values = new ArrayList();
         this.isTwoPane = isTwoPane;
         this.activity = activity;
     }
@@ -43,16 +46,20 @@ public class StoryAdapter
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.mItem = mValues.get(position);
-        holder.titleTextView.setText(mValues.get(position).title);
-        holder.authorTextView.setText(mValues.get(position).author);
+        holder.story = values.get(position);
+        holder.titleTextView.setText(values.get(position).getTitle());
+        holder.authorTextView.setText(values.get(position).getAuthor());
+        holder.pointsTextView.setText( activity.getString( R.string.points, "" + values.get(position).getPoints() ) );
+        holder.timeTextView.setText(values.get(position).getTime( activity ));
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (isTwoPane) {
                     Bundle arguments = new Bundle();
-                    arguments.putString(StoryDetailFragment.ARG_ITEM_ID, holder.mItem.title);
+                    arguments.putString(StoryDetailFragment.KIDS, holder.story.getKids());
+                    arguments.putString(StoryDetailFragment.TITLE, holder.story.getTitle());
+                    arguments.putLong(StoryDetailFragment.STORY_ID, holder.story.getId());
                     StoryDetailFragment fragment = new StoryDetailFragment();
                     fragment.setArguments(arguments);
                     activity.getSupportFragmentManager().beginTransaction()
@@ -61,7 +68,9 @@ public class StoryAdapter
                 } else {
                     Context context = v.getContext();
                     Intent intent = new Intent(context, StoryDetailActivity.class);
-                    intent.putExtra(StoryDetailFragment.ARG_ITEM_ID, holder.mItem.title);
+                    intent.putExtra(StoryDetailFragment.KIDS, holder.story.getKids());
+                    intent.putExtra(StoryDetailFragment.TITLE, holder.story.getTitle());
+                    intent.putExtra(StoryDetailFragment.STORY_ID, holder.story.getId());
 
                     context.startActivity(intent);
                 }
@@ -71,7 +80,7 @@ public class StoryAdapter
 
     @Override
     public int getItemCount() {
-        return mValues.size();
+        return values.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -80,7 +89,8 @@ public class StoryAdapter
         public final TextView authorTextView;
         public final TextView pointsTextView;
         public final TextView timeTextView;
-        public DummyContent.Story mItem;
+        public final Button goButton;
+        public Story story;
 
         public ViewHolder(View view) {
             super(view);
@@ -89,11 +99,33 @@ public class StoryAdapter
             authorTextView = (TextView) view.findViewById(R.id.textview_author);
             pointsTextView = (TextView) view.findViewById(R.id.textview_points);
             timeTextView = (TextView) view.findViewById(R.id.textview_time);
+            goButton = (Button) view.findViewById(R.id.button);
+            goButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+                    builder.setToolbarColor( activity.getResources().getColor( R.color.colorPrimary ));
+                    CustomTabsIntent customTabsIntent = builder.build();
+                    customTabsIntent.launchUrl( activity, Uri.parse( story.getUrl() ));
+                }
+            });
         }
 
         @Override
         public String toString() {
             return super.toString() + " '" + titleTextView.getText() + "'";
         }
+    }
+
+    public synchronized void addItem( Story story )
+    {
+        values.add( story );
+    }
+
+
+    public void clear() {
+        int size = values.size();
+        values.clear();
+        notifyItemRangeRemoved( 0, size );
     }
 }

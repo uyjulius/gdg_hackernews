@@ -38,4 +38,9 @@
         <item name="android:textSize">@dimen/text_size_subtitle</item>
     </style>
 
+
+    <style name="AppTheme.Button" parent="Widget.AppCompat.Button">
+        <!-- some other theme configurations for actionbar, overflow menu etc. -->
+    </style>
+
 </resources>

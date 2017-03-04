@@ -19,7 +19,7 @@ public class StoryDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_story_detail);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         // Show the Up button in the action bar.
@@ -41,8 +41,9 @@ public class StoryDetailActivity extends AppCompatActivity {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putString(StoryDetailFragment.ARG_ITEM_ID,
-                    getIntent().getStringExtra(StoryDetailFragment.ARG_ITEM_ID));
+            arguments.putString(StoryDetailFragment.KIDS, getIntent().getStringExtra(StoryDetailFragment.KIDS));
+            arguments.putString(StoryDetailFragment.TITLE, getIntent().getStringExtra(StoryDetailFragment.TITLE));
+            arguments.putLong(StoryDetailFragment.STORY_ID, getIntent().getLongExtra(StoryDetailFragment.STORY_ID, 0));
             StoryDetailFragment fragment = new StoryDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()

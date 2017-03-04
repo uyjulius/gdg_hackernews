@@ -1,14 +1,25 @@
 package hackernews.android;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
+import android.util.Log;
+import android.widget.Toast;
+
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import hackernews.android.adapter.StoryAdapter;
-import hackernews.android.dummy.DummyContent;
+import hackernews.android.beans.Story;
+import hackernews.android.network.NetworkCalls;
+import hackernews.android.network.VolleyManager;
 
 /**
  * An activity representing a list of Stories. This activity
@@ -20,11 +31,15 @@ import hackernews.android.dummy.DummyContent;
  */
 public class StoryListActivity extends AppCompatActivity {
 
+    private static final String TAG = "StoryListActivity";
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.
      */
     private boolean isTwoPane;
+    private int terminator = 0; //This is used to find the number of times loadStory is called before we show the list. There are more elegant solutions, such as using Reactive programming, but for the sake of the demo, I'll use this one.
+    private StoryAdapter adapter;
+    private SwipeRefreshLayout swp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,10 +49,8 @@ public class StoryListActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
-
-        View recyclerView = findViewById(R.id.story_list);
-        assert recyclerView != null;
-        setupRecyclerView((RecyclerView) recyclerView);
+        swp = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.story_list);
 
         if (findViewById(R.id.story_detail_container) != null) {
             // The detail container view will be present only in the
@@ -46,10 +59,110 @@ public class StoryListActivity extends AppCompatActivity {
             // activity should be in two-pane mode.
             isTwoPane = true;
         }
+
+        adapter = new StoryAdapter(this, isTwoPane);
+        recyclerView.setAdapter( adapter );
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager( this );
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
+                layoutManager.getOrientation() );
+
+        recyclerView.addItemDecoration(dividerItemDecoration);
+
+        swp.setOnRefreshListener(
+                new SwipeRefreshLayout.OnRefreshListener() {
+                    @Override
+                    public void onRefresh() {
+                        Log.i(TAG, "onRefresh called from SwipeRefreshLayout");
+
+                        // This method performs the actual data-refresh operation.
+                        // The method calls setRefreshing(false) when it's finished.
+                        loadTopStories();
+                    }
+                }
+        );
+
+
+        loadTopStories();
     }
 
-    private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        recyclerView.setAdapter(new StoryAdapter(DummyContent.ITEMS, this, isTwoPane));
+    private void loadTopStories() {
+
+        try
+        {
+            adapter.clear();
+            swp.setRefreshing( true );
+            VolleyManager.makeVolleyStringRequest(NetworkCalls.getTopStories(), new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    try
+                    {
+                        JSONArray topStoriesArray = new JSONArray( response );
+                        terminator = Math.min( 10, topStoriesArray.length() );
+                        for( int i = 0; i < terminator; i++ )
+                        {
+                            loadStory( topStoriesArray.getInt( i ) );
+                        }
+                    }
+                    catch( Exception e )
+                    {
+                        Log.e( TAG, e.getMessage() );
+                    }
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.e( TAG, error.getMessage() );
+                    Toast.makeText( StoryListActivity.this, getString( R.string.error_loading_top_stories ), Toast.LENGTH_SHORT );
+                }
+            });
+        }
+        catch( Exception e )
+        {
+            Log.e( TAG, e.getMessage() );
+            Toast.makeText( this, getString( R.string.error_loading_top_stories ), Toast.LENGTH_SHORT );
+        }
+    }
+
+    /**
+     * Loads the story
+     *
+     * @param id
+     */
+    private void loadStory(int id) {
+        try
+        {
+            VolleyManager.makeVolleyStringRequest(NetworkCalls.getStory( id ), new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    try
+                    {
+                        terminator--;
+                        Story story = new Story( new JSONObject( response ) );
+                        adapter.addItem( story );
+
+                        if( terminator == 0 )
+                        {
+                            adapter.notifyItemRangeInserted( 0, adapter.getItemCount() );
+                            swp.setRefreshing( false );
+                        }
+                    }
+                    catch( Exception e )
+                    {
+                        Log.e( TAG, e.getMessage() );
+                    }
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.e( TAG, error.getMessage() );
+                }
+            });
+        }
+        catch( Exception e )
+        {
+            Log.e( TAG, e.getMessage() );
+        }
     }
 
 
