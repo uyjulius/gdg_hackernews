@@ -3,6 +3,7 @@ package hackernews.android.adapter;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,6 +40,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
     @Override
     public void onBindViewHolder(final CommentAdapter.ViewHolder holder, int position) {
         holder.textTextView.setText( Html.fromHtml( values.get(position).getText()) );
+        holder.textTextView.setMovementMethod(LinkMovementMethod.getInstance());
         holder.authorTextView.setText(values.get(position).getAuthor());
         holder.timeTextView.setText(values.get(position).getTime( activity ));
 

@@ -1,6 +1,5 @@
 package hackernews.android;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -62,7 +61,8 @@ public class StoryDetailActivity extends AppCompatActivity {
             //
             // http://developer.android.com/design/patterns/navigation.html#up-vs-back
             //
-            navigateUpTo(new Intent(this, StoryListActivity.class));
+            // navigateUpTo(new Intent(this, StoryListActivity.class));
+            finish();
             return true;
         }
         return super.onOptionsItemSelected(item);
