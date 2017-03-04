@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="hackernews.comhackernewsandroid">
+    package="hackernews.android">
 
     <application
         android:allowBackup="true"
@@ -9,7 +9,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".StoryListActivity"
+            android:name="hackernews.android.StoryListActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -19,13 +19,13 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".StoryDetailActivity"
+            android:name="hackernews.android.StoryDetailActivity"
             android:label="@string/title_story_detail"
-            android:parentActivityName=".StoryListActivity"
+            android:parentActivityName="hackernews.android.StoryListActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="hackernews.comhackernewsandroid.StoryListActivity" />
+                android:value="hackernews.android.StoryListActivity" />
         </activity>
     </application>
 

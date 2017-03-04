@@ -1,4 +1,4 @@
-package hackernews.comhackernewsandroid;
+package hackernews.android;
 
 import org.junit.Test;
 

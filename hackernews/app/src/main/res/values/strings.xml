@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">com.hackernews.android</string>
+    <string name="app_name">Hacker News</string>
     <string name="title_story_detail">Story Detail</string>
 </resources>

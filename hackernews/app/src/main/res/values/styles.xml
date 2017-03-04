@@ -17,4 +17,25 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <style name="AppTheme.TextAppearance" parent="TextAppearance.AppCompat">
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textSize">@dimen/text_size_title</item>
+    </style>
+
+    <style name="AppTheme.TextAppearance.Header">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">@dimen/text_size_title</item>
+    </style>
+
+    <style name="AppTheme.TextAppearance.Subheader" >
+        <item name="android:textSize">@dimen/text_size_subtitle</item>
+    </style>
+
+
+    <style name="AppTheme.TextAppearance.Tertiary" >
+        <item name="android:textColor">@color/colorTertiary</item>
+        <item name="android:textSize">@dimen/text_size_subtitle</item>
+    </style>
+
 </resources>
