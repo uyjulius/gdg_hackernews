@@ -21,6 +21,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import hackernews.android.adapter.CommentAdapter;
+import hackernews.android.beans.Analytics;
 import hackernews.android.beans.Comment;
 import hackernews.android.network.NetworkCalls;
 import hackernews.android.network.VolleyManager;
@@ -98,6 +99,12 @@ public class StoryDetailFragment extends Fragment {
         );
 
         loadKids();
+
+        //Devfest: ANALYTICS START
+        Bundle bundle = new Bundle();
+        bundle.putString(Analytics.Param.PAGE, TAG);
+        HackerNewsApplication.logEvent(Analytics.Event.SCREEN_VIEW, bundle);
+        //Devfest: ANALYTICS END
 
         return rootView;
     }

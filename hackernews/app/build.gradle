@@ -1,5 +1,7 @@
 buildscript {
     repositories {
+
+        //Devfest: CRASH REPORTING
         maven {
             url 'https://maven.fabric.io/public'
         }
@@ -10,6 +12,8 @@ buildscript {
         jcenter()
     }
 
+
+    //Devfest: CRASH REPORTING
     dependencies {
         classpath 'io.fabric.tools:gradle:1.+'
     }
@@ -18,18 +22,25 @@ buildscript {
 repositories {
     mavenCentral()
     jcenter()
+
+    //Devfest: CRASH REPORTING
     maven { url 'https://maven.fabric.io/public' }
     flatDir { dirs 'libs' }
 }
 
 apply plugin: 'com.android.application'
 
+//Devfest: CRASH REPORTING
+apply plugin: 'io.fabric'
+
+//Devfest: PERFORMANCE MONITORING
+apply plugin: 'com.google.firebase.firebase-perf'
 
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.1"
     defaultConfig {
-        applicationId "hackernews.comhackernewsandroid"
+        applicationId "hackernews.android"
         minSdkVersion 16
         targetSdkVersion 25
         versionCode 1
@@ -56,4 +67,17 @@ dependencies {
     compile 'com.android.support:customtabs:25.1.1'
     testCompile 'junit:junit:4.12'
     compile project(':volley')
+
+    //Devfest: ANALYTICS
+    compile 'com.google.firebase:firebase-core:11.0.0'
+
+    //Devfest: CRASH REPORTING
+    compile('com.crashlytics.sdk.android:crashlytics:2.6.8@aar') {
+        transitive = true;
+    }
+
+    //Devfest: PERFORMANCE MONITORING
+    compile 'com.google.firebase:firebase-perf:11.0.0'
 }
+
+apply plugin: 'com.google.gms.google-services'

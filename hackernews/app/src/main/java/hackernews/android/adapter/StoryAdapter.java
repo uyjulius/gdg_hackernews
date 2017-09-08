@@ -16,9 +16,11 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import hackernews.android.HackerNewsApplication;
 import hackernews.android.R;
 import hackernews.android.StoryDetailActivity;
 import hackernews.android.StoryDetailFragment;
+import hackernews.android.beans.Analytics;
 import hackernews.android.beans.Story;
 
 /**
@@ -30,11 +32,13 @@ public class StoryAdapter extends RecyclerView.Adapter<StoryAdapter.ViewHolder> 
     private final List<Story> values;
     private boolean isTwoPane;
     private AppCompatActivity activity;
+    private String page;
 
-    public StoryAdapter(AppCompatActivity activity, boolean isTwoPane ) {
+    public StoryAdapter(AppCompatActivity activity, boolean isTwoPane, String page ) {
         values = new ArrayList();
         this.isTwoPane = isTwoPane;
         this.activity = activity;
+        this.page = page;
     }
 
     @Override
@@ -55,6 +59,14 @@ public class StoryAdapter extends RecyclerView.Adapter<StoryAdapter.ViewHolder> 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                //Devfest: ANALYTICS START
+                Bundle bundle = new Bundle();
+                bundle.putString(Analytics.Param.PAGE, page);
+                bundle.putString(Analytics.Param.WHAT, "story_row" );
+                HackerNewsApplication.logEvent(Analytics.Event.CLICK, bundle);
+                //Devfest: ANALYTICS END
+
                 if (isTwoPane) {
                     Bundle arguments = new Bundle();
                     arguments.putString(StoryDetailFragment.KIDS, holder.story.getKids());
@@ -103,6 +115,18 @@ public class StoryAdapter extends RecyclerView.Adapter<StoryAdapter.ViewHolder> 
             goButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+
+                    //Devfest: ANALYTICS START
+                    Bundle bundle = new Bundle();
+                    bundle.putString(Analytics.Param.PAGE, page);
+                    bundle.putString(Analytics.Param.WHAT, "go_button" );
+                    HackerNewsApplication.logEvent(Analytics.Event.CLICK, bundle);
+                    //Devfest: ANALYTICS END
+
+                    //Devfest: CRASH REPORTING START
+//                    int i = 1 / 0;
+                    //Devfest: CRASH REPORTING END
+
                     CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
                     builder.setToolbarColor( activity.getResources().getColor( R.color.colorPrimary ));
                     CustomTabsIntent customTabsIntent = builder.build();

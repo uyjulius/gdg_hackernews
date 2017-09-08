@@ -12,14 +12,17 @@ import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.crashlytics.android.Crashlytics;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import hackernews.android.adapter.StoryAdapter;
+import hackernews.android.beans.Analytics;
 import hackernews.android.beans.Story;
 import hackernews.android.network.NetworkCalls;
 import hackernews.android.network.VolleyManager;
+import io.fabric.sdk.android.Fabric;
 
 /**
  * An activity representing a list of Stories. This activity
@@ -44,8 +47,8 @@ public class StoryListActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_story_list);
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
@@ -60,7 +63,7 @@ public class StoryListActivity extends AppCompatActivity {
             isTwoPane = true;
         }
 
-        adapter = new StoryAdapter(this, isTwoPane);
+        adapter = new StoryAdapter(this, isTwoPane, TAG);
         recyclerView.setAdapter( adapter );
 
         LinearLayoutManager layoutManager = new LinearLayoutManager( this );
@@ -82,6 +85,11 @@ public class StoryListActivity extends AppCompatActivity {
                 }
         );
 
+        //Devfest: ANALYTICS START
+        Bundle bundle = new Bundle();
+        bundle.putString(Analytics.Param.PAGE, TAG);
+        HackerNewsApplication.logEvent(Analytics.Event.SCREEN_VIEW, bundle);
+        //Devfest: ANALYTICS END
 
         loadTopStories();
     }
@@ -97,6 +105,13 @@ public class StoryListActivity extends AppCompatActivity {
                 public void onResponse(String response) {
                     try
                     {
+                        //Devfest: ANALYTICS START
+                        Bundle bundle = new Bundle();
+                        bundle.putString(Analytics.Param.PAGE, TAG);
+                        bundle.putString(Analytics.Param.WHAT, "loadTopStories" );
+                        HackerNewsApplication.logEvent(Analytics.Event.API_LOAD_SUCCESS, bundle);
+                        //Devfest: ANALYTICS END
+
                         JSONArray topStoriesArray = new JSONArray( response );
                         terminator = Math.min( 10, topStoriesArray.length() );
                         for( int i = 0; i < terminator; i++ )
@@ -112,6 +127,14 @@ public class StoryListActivity extends AppCompatActivity {
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
+
+                    //Devfest: ANALYTICS START
+                    Bundle bundle = new Bundle();
+                    bundle.putString(Analytics.Param.PAGE, TAG);
+                    bundle.putString(Analytics.Param.WHAT, "loadTopStories" );
+                    HackerNewsApplication.logEvent(Analytics.Event.API_LOAD_FAIL, bundle);
+                    //Devfest: ANALYTICS END
+
                     Log.e( TAG, error.getMessage() );
                     Toast.makeText( StoryListActivity.this, getString( R.string.error_loading_top_stories ), Toast.LENGTH_SHORT );
                 }
