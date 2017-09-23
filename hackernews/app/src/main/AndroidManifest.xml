@@ -22,7 +22,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="hackernews.android.StoryDetailActivity"
+            android:name="hackernews.android.CommentActivity"
             android:label="@string/title_story_detail"
             android:parentActivityName="hackernews.android.StoryListActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -30,6 +30,11 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="hackernews.android.StoryListActivity" />
         </activity>
+        <!--DEVFEST: CRASH REPORTING-->
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="Your Key Here"
+            />
     </application>
 
 </manifest>

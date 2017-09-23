@@ -21,7 +21,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import hackernews.android.adapter.CommentAdapter;
-import hackernews.android.beans.Analytics;
 import hackernews.android.beans.Comment;
 import hackernews.android.network.NetworkCalls;
 import hackernews.android.network.VolleyManager;
@@ -29,10 +28,10 @@ import hackernews.android.network.VolleyManager;
 /**
  * A fragment representing a single Story detail screen.
  * This fragment is either contained in a {@link StoryListActivity}
- * in two-pane mode (on tablets) or a {@link StoryDetailActivity}
+ * in two-pane mode (on tablets) or a {@link CommentActivity}
  * on handsets.
  */
-public class StoryDetailFragment extends Fragment {
+public class CommentFragment extends Fragment {
 
     private static final String TAG = "StoryDetailFragment";
 
@@ -52,7 +51,7 @@ public class StoryDetailFragment extends Fragment {
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public StoryDetailFragment() {
+    public CommentFragment() {
     }
 
     @Override
@@ -89,22 +88,25 @@ public class StoryDetailFragment extends Fragment {
                 new SwipeRefreshLayout.OnRefreshListener() {
                     @Override
                     public void onRefresh() {
-                        Log.i(TAG, "onRefresh called from SwipeRefreshLayout");
-
                         // This method performs the actual data-refresh operation.
                         // The method calls setRefreshing(false) when it's finished.
-                        loadKids();
+
+                        /**
+                         * Devfest Demo:
+                         *
+                         * We are automatically crashing this to show how a crash looks like in Crashlytics.
+                         *
+                         */
+                        int i = 1 / 0;
+
+
+                        loadResponses();
                     }
                 }
         );
 
-        loadKids();
+        loadResponses();
 
-        //Devfest: ANALYTICS START
-        Bundle bundle = new Bundle();
-        bundle.putString(Analytics.Param.PAGE, TAG);
-        HackerNewsApplication.logEvent(Analytics.Event.SCREEN_VIEW, bundle);
-        //Devfest: ANALYTICS END
 
         return rootView;
     }
@@ -113,7 +115,7 @@ public class StoryDetailFragment extends Fragment {
      * Loads the comments
      *
      */
-    private void loadKids()
+    private void loadResponses()
     {
         try
         {

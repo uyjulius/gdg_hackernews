@@ -12,7 +12,6 @@ import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.crashlytics.android.Crashlytics;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -22,13 +21,12 @@ import hackernews.android.beans.Analytics;
 import hackernews.android.beans.Story;
 import hackernews.android.network.NetworkCalls;
 import hackernews.android.network.VolleyManager;
-import io.fabric.sdk.android.Fabric;
 
 /**
  * An activity representing a list of Stories. This activity
  * has different presentations for handset and tablet-size devices. On
  * handsets, the activity presents a list of items, which when touched,
- * lead to a {@link StoryDetailActivity} representing
+ * lead to a {@link CommentActivity} representing
  * item points. On tablets, the activity presents the list of items and
  * item points side-by-side using two vertical panes.
  */
@@ -43,11 +41,11 @@ public class StoryListActivity extends AppCompatActivity {
     private int terminator = 0; //This is used to find the number of times loadStory is called before we show the list. There are more elegant solutions, such as using Reactive programming, but for the sake of the demo, I'll use this one.
     private StoryAdapter adapter;
     private SwipeRefreshLayout swp;
+    private long screenLoadTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_story_list);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -76,8 +74,6 @@ public class StoryListActivity extends AppCompatActivity {
                 new SwipeRefreshLayout.OnRefreshListener() {
                     @Override
                     public void onRefresh() {
-                        Log.i(TAG, "onRefresh called from SwipeRefreshLayout");
-
                         // This method performs the actual data-refresh operation.
                         // The method calls setRefreshing(false) when it's finished.
                         loadTopStories();
@@ -186,6 +182,35 @@ public class StoryListActivity extends AppCompatActivity {
         {
             Log.e( TAG, e.getMessage() );
         }
+    }
+
+    @Override
+    public void onStart()
+    {
+        super.onStart();
+
+        screenLoadTime = System.currentTimeMillis();
+
+        //Devfest: ANALYTICS START
+        Bundle bundle = new Bundle();
+        bundle.putString(Analytics.Param.PAGE, TAG);
+        HackerNewsApplication.logEvent(Analytics.Event.SCREEN_VIEW, bundle);
+        //Devfest: ANALYTICS END
+    }
+
+    @Override
+    public void onStop()
+    {
+        super.onStop();
+
+        //Devfest: ANALYTICS START
+        long timeSpent = System.currentTimeMillis() - screenLoadTime;
+
+        Bundle b = new Bundle();
+        b.putString( Analytics.Param.PAGE, TAG );
+        b.putString( Analytics.Param.TIME_SPENT, timeSpent + "" );
+        HackerNewsApplication.logEvent(Analytics.Event.SCREEN_EXIT, b );
+        //Devfest: ANALYTICS END
     }
 
 

@@ -1,7 +1,8 @@
 <resources>
     <string name="app_name">Hacker News</string>
     <string name="title_story_detail">Story Detail</string>
-    <string name="go">Go</string>
+    <string name="visit">Visit</string>
+    <string name="comments">Comments</string>
     <string name="points">%1$s points</string>
     <string name="error_loading_top_stories">There was an error loading the top stories. Please try again later.</string>
 

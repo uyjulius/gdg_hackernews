@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "Your Project Number",
+    "firebase_url": "Your Firebase URL",
+    "project_id": "Your Project ID",
+    "storage_bucket": "Your Storage Budget"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "Your SDK App ID",
+        "android_client_info": {
+          "package_name": "hackernews.android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "Your Client ID",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "Your Key Here"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

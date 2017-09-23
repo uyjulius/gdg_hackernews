@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,10 +17,10 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import hackernews.android.CommentActivity;
+import hackernews.android.CommentFragment;
 import hackernews.android.HackerNewsApplication;
 import hackernews.android.R;
-import hackernews.android.StoryDetailActivity;
-import hackernews.android.StoryDetailFragment;
 import hackernews.android.beans.Analytics;
 import hackernews.android.beans.Story;
 
@@ -29,6 +30,7 @@ import hackernews.android.beans.Story;
 
 public class StoryAdapter extends RecyclerView.Adapter<StoryAdapter.ViewHolder> {
 
+    private static final String TAG = "StoryAdapter";
     private final List<Story> values;
     private boolean isTwoPane;
     private AppCompatActivity activity;
@@ -55,39 +57,6 @@ public class StoryAdapter extends RecyclerView.Adapter<StoryAdapter.ViewHolder> 
         holder.authorTextView.setText(values.get(position).getAuthor());
         holder.pointsTextView.setText( activity.getString( R.string.points, "" + values.get(position).getPoints() ) );
         holder.timeTextView.setText(values.get(position).getTime( activity ));
-
-        holder.mView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                //Devfest: ANALYTICS START
-                Bundle bundle = new Bundle();
-                bundle.putString(Analytics.Param.PAGE, page);
-                bundle.putString(Analytics.Param.WHAT, "story_row" );
-                HackerNewsApplication.logEvent(Analytics.Event.CLICK, bundle);
-                //Devfest: ANALYTICS END
-
-                if (isTwoPane) {
-                    Bundle arguments = new Bundle();
-                    arguments.putString(StoryDetailFragment.KIDS, holder.story.getKids());
-                    arguments.putString(StoryDetailFragment.TITLE, holder.story.getTitle());
-                    arguments.putLong(StoryDetailFragment.STORY_ID, holder.story.getId());
-                    StoryDetailFragment fragment = new StoryDetailFragment();
-                    fragment.setArguments(arguments);
-                    activity.getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.story_detail_container, fragment)
-                            .commit();
-                } else {
-                    Context context = v.getContext();
-                    Intent intent = new Intent(context, StoryDetailActivity.class);
-                    intent.putExtra(StoryDetailFragment.KIDS, holder.story.getKids());
-                    intent.putExtra(StoryDetailFragment.TITLE, holder.story.getTitle());
-                    intent.putExtra(StoryDetailFragment.STORY_ID, holder.story.getId());
-
-                    context.startActivity(intent);
-                }
-            }
-        });
     }
 
     @Override
@@ -102,6 +71,7 @@ public class StoryAdapter extends RecyclerView.Adapter<StoryAdapter.ViewHolder> 
         public final TextView pointsTextView;
         public final TextView timeTextView;
         public final Button goButton;
+        public final Button commentButton;
         public Story story;
 
         public ViewHolder(View view) {
@@ -119,18 +89,58 @@ public class StoryAdapter extends RecyclerView.Adapter<StoryAdapter.ViewHolder> 
                     //Devfest: ANALYTICS START
                     Bundle bundle = new Bundle();
                     bundle.putString(Analytics.Param.PAGE, page);
-                    bundle.putString(Analytics.Param.WHAT, "go_button" );
+                    bundle.putString(Analytics.Param.WHAT, "visit_button" );
                     HackerNewsApplication.logEvent(Analytics.Event.CLICK, bundle);
                     //Devfest: ANALYTICS END
 
-                    //Devfest: CRASH REPORTING START
-//                    int i = 1 / 0;
-                    //Devfest: CRASH REPORTING END
+                    try {
+
+                        int i = 1 / 0;
+                    }
+                    catch( Exception e )
+                    {
+                        Log.d( TAG, "Woohoo! I fixed the crash!" );
+                    }
 
                     CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
                     builder.setToolbarColor( activity.getResources().getColor( R.color.colorPrimary ));
                     CustomTabsIntent customTabsIntent = builder.build();
                     customTabsIntent.launchUrl( activity, Uri.parse( story.getUrl() ));
+                }
+            });
+
+            commentButton = (Button) view.findViewById(R.id.button_comments);
+
+            commentButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    //Devfest: ANALYTICS START
+                    Bundle bundle = new Bundle();
+                    bundle.putString(Analytics.Param.PAGE, page);
+                    bundle.putString(Analytics.Param.WHAT, "comment_button" );
+                    HackerNewsApplication.logEvent(Analytics.Event.CLICK, bundle);
+                    //Devfest: ANALYTICS END
+
+                    if (isTwoPane) {
+                        Bundle arguments = new Bundle();
+                        arguments.putString(CommentFragment.KIDS, story.getKids());
+                        arguments.putString(CommentFragment.TITLE, story.getTitle());
+                        arguments.putLong(CommentFragment.STORY_ID, story.getId());
+                        CommentFragment fragment = new CommentFragment();
+                        fragment.setArguments(arguments);
+                        activity.getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.story_detail_container, fragment)
+                                .commit();
+                    } else {
+                        Context context = v.getContext();
+                        Intent intent = new Intent(context, CommentActivity.class);
+                        intent.putExtra(CommentFragment.KIDS, story.getKids());
+                        intent.putExtra(CommentFragment.TITLE, story.getTitle());
+                        intent.putExtra(CommentFragment.STORY_ID, story.getId());
+
+                        context.startActivity(intent);
+                    }
                 }
             });
         }

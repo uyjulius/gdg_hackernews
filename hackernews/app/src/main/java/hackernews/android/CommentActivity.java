@@ -6,18 +6,25 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
+import hackernews.android.beans.Analytics;
+
 /**
  * An activity representing a single Story detail screen. This
  * activity is only used narrow width devices. On tablet-size devices,
  * item points are presented side-by-side with a list of items
- * in a {@link StoryListActivity}.
+ * in a {@link CommentActivity}.
  */
-public class StoryDetailActivity extends AppCompatActivity {
+public class CommentActivity extends AppCompatActivity {
+
+
+    private long screenLoadTime;
+    private static final String TAG = "CommentActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_story_detail);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -40,10 +47,10 @@ public class StoryDetailActivity extends AppCompatActivity {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putString(StoryDetailFragment.KIDS, getIntent().getStringExtra(StoryDetailFragment.KIDS));
-            arguments.putString(StoryDetailFragment.TITLE, getIntent().getStringExtra(StoryDetailFragment.TITLE));
-            arguments.putLong(StoryDetailFragment.STORY_ID, getIntent().getLongExtra(StoryDetailFragment.STORY_ID, 0));
-            StoryDetailFragment fragment = new StoryDetailFragment();
+            arguments.putString(CommentFragment.KIDS, getIntent().getStringExtra(CommentFragment.KIDS));
+            arguments.putString(CommentFragment.TITLE, getIntent().getStringExtra(CommentFragment.TITLE));
+            arguments.putLong(CommentFragment.STORY_ID, getIntent().getLongExtra(CommentFragment.STORY_ID, 0));
+            CommentFragment fragment = new CommentFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.story_detail_container, fragment)
@@ -66,5 +73,35 @@ public class StoryDetailActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+
+    @Override
+    public void onStart()
+    {
+        super.onStart();
+
+        screenLoadTime = System.currentTimeMillis();
+
+        //Devfest: ANALYTICS START
+        Bundle bundle = new Bundle();
+        bundle.putString(Analytics.Param.PAGE, TAG);
+        HackerNewsApplication.logEvent(Analytics.Event.SCREEN_VIEW, bundle);
+        //Devfest: ANALYTICS END
+    }
+
+    @Override
+    public void onStop()
+    {
+        super.onStop();
+
+        //Devfest: ANALYTICS START
+        long timeSpent = System.currentTimeMillis() - screenLoadTime;
+
+        Bundle b = new Bundle();
+        b.putString( Analytics.Param.PAGE, TAG );
+        b.putString( Analytics.Param.TIME_SPENT, timeSpent + "" );
+        HackerNewsApplication.logEvent(Analytics.Event.SCREEN_EXIT, b );
+        //Devfest: ANALYTICS END
     }
 }
