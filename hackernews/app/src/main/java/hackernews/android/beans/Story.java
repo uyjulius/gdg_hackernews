@@ -66,7 +66,7 @@ public class Story {
 
     public String getTime( Context context )
     {
-        return TimeUtils.getTimeAgo( context, time );
+        return TimeUtils.getTimeAgo( context, System.currentTimeMillis() - time * 1000 );
     }
 
     public String getKids()
